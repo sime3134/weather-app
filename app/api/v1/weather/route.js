@@ -1,3 +1,8 @@
+/**
+ * API route for getting weather data
+ * @param {Request} req
+ * @returns weather data or error
+ */
 export async function GET(req) {
   const city = req.nextUrl.searchParams.get("city");
 

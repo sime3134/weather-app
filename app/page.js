@@ -1,6 +1,11 @@
 import { cookies } from "next/headers";
 import HomeView from "./components/HomeView";
 
+/**
+ * Fetch weather data from weatherapi.com
+ * @param {String} city
+ * @returns undefined or weather data
+ */
 const getWeatherData = async (city) => {
   if (city) {
     const response = await fetch(
@@ -15,6 +20,11 @@ const getWeatherData = async (city) => {
   }
 };
 
+/**
+ * Fetch background image from unsplash.com
+ * @param {String} city
+ * @returns undefined or image data
+ */
 const getBackgroundImage = async (city) => {
   if (city) {
     const response = await fetch(
@@ -30,11 +40,14 @@ const getBackgroundImage = async (city) => {
 };
 
 export default async function Home() {
+  // Get last city from cookies
   const cookieStore = cookies();
   let city = cookieStore.get("lastCity")?.value ?? "";
   city !== "" && decodeURIComponent(city);
+
   const weatherData = await getWeatherData(city);
   const backgroundImage = await getBackgroundImage(city);
+
   return (
     <HomeView
       firstCity={city}

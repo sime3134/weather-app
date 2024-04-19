@@ -1,3 +1,8 @@
+/**
+ * API route for getting image data
+ * @param {Request} req
+ * @returns image data or error
+ */
 export async function GET(req) {
   const city = req.nextUrl.searchParams.get("city");
   console.log(city);
