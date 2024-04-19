@@ -12,9 +12,22 @@ const getWeatherData = async (city) => {
   return response.json();
 };
 
+const getBackgroundImage = async (city) => {
+  const response = await fetch(
+    `https://api.unsplash.com/photos/random?query=${city}&client_id=sp4PYBTZuQa_CXlLFIEpw8W4a8J6cqALuhgkHsFWNJs`
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch background image");
+  }
+
+  return response.json();
+};
+
 export default async function Home() {
   const city = "Malmö"; //Read from cookies later
   const weatherData = await getWeatherData(city);
+  const backgroundImage = await getBackgroundImage(city);
   return (
     <HomeView imageUrl={backgroundImage.urls.full} weatherData={weatherData} />
   );
