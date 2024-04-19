@@ -1,6 +1,5 @@
 export async function GET(req) {
   const city = req.nextUrl.searchParams.get("city");
-  console.log(city);
 
   const response = await fetch(
     `http://api.weatherapi.com/v1/forecast.json?key=3226c53da11f4dc996f142724231809&q=${city}&days=5&aqi=no&alerts=no`

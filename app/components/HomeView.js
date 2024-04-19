@@ -83,6 +83,7 @@ export default function HomeView({
     if (success) {
       getNewBackgroundImage(inputCity);
       setCityName(inputCity);
+      document.cookie = `lastCity=${encodeURIComponent(inputCity)}; path=/;`;
       setOpen(false);
     }
   };
@@ -97,7 +98,10 @@ export default function HomeView({
           position="absolute"
           sx={{
             flexBasis: { xs: "30%", md: "70%" },
-            backgroundImage: `url(${imageUrl})`,
+            backgroundImage: `url(${
+              imageUrl ??
+              "https://images.unsplash.com/photo-1580193769210-b8d1c049a7d9?q=80&w=3548&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+            })`,
             backgroundSize: "cover",
           }}
         >
@@ -147,77 +151,32 @@ export default function HomeView({
                   </svg>
                 </SvgIcon>{" "}
               </Button>
-              {cityName}
+              {cityName === "" || !weatherData
+                ? "<-- Add a City Here"
+                : cityName}
             </Typography>
           </Sheet>
         </Box>
-        <Box
-          sx={{
-            flexBasis: { xs: "70%", md: "30%" },
-            width: "100%",
-            position: "absolute",
-            bottom: 0,
-            background: "rgba(31, 122, 31, 0.2)",
-            boxShadow: "0 4px 30px rgba(0, 0, 0, 0.1)",
-            backdropFilter: "blur(5px)",
-            border: "1px solid rgba(255, 255, 255, 0.3)",
-          }}
-        >
-          <Grid
-            container
-            height="100%"
-            justifyContent="space-around"
-            alignItems="center"
+        {(cityName !== "" || !weatherData) && (
+          <Box
+            sx={{
+              flexBasis: { xs: "70%", md: "30%" },
+              width: "100%",
+              position: "absolute",
+              bottom: 0,
+              background: "rgba(31, 122, 31, 0.2)",
+              boxShadow: "0 4px 30px rgba(0, 0, 0, 0.1)",
+              backdropFilter: "blur(5px)",
+              border: "1px solid rgba(255, 255, 255, 0.3)",
+            }}
           >
-            <Grid xs={12} sm={6} md={3}>
-              <Card
-                sx={{
-                  margin: "15px 15px",
-                  boxShadow: "0 4px 30px rgba(0, 0, 0, 0.1)",
-                  backdropFilter: "blur(5px)",
-                  border: "1px solid rgba(255, 255, 255, 0.3)",
-                  background: "rgba(31, 122, 31, 0.2)",
-                }}
-                variant="solid"
-              >
-                <CardContent
-                  orientation="horizontal"
-                  sx={{ justifyContent: "center" }}
-                >
-                  <Image
-                    src={`https:${weatherData.current.condition.icon}`}
-                    alt="weather icon"
-                    width={80}
-                    height={80}
-                  />
-                </CardContent>
-                <CardContent>
-                  <Typography
-                    sx={{ color: "#FFF" }}
-                    textAlign="center"
-                    level="h3"
-                  >
-                    current
-                  </Typography>
-                  <Typography
-                    sx={{ color: "#FFF" }}
-                    textAlign="center"
-                    level="h4"
-                  >
-                    {weatherData.current.condition.text}
-                  </Typography>
-                  <Typography
-                    sx={{ color: "#FFF" }}
-                    textAlign="center"
-                    level="body-lg"
-                  >
-                    {weatherData.current.temp_c}°C
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-            {weatherData.forecast.forecastday.map((day) => (
-              <Grid key={day.date} xs={12} sm={6} md={3}>
+            <Grid
+              container
+              height="100%"
+              justifyContent="space-around"
+              alignItems="center"
+            >
+              <Grid xs={12} sm={6} md={3}>
                 <Card
                   sx={{
                     margin: "15px 15px",
@@ -232,12 +191,14 @@ export default function HomeView({
                     orientation="horizontal"
                     sx={{ justifyContent: "center" }}
                   >
-                    <Image
-                      src={`https:${day.day.condition.icon}`}
-                      alt="weather icon"
-                      width={80}
-                      height={80}
-                    />
+                    {weatherData && (
+                      <Image
+                        src={`https:${weatherData?.current.condition.icon}`}
+                        alt="weather icon"
+                        width={80}
+                        height={80}
+                      />
+                    )}
                   </CardContent>
                   <CardContent>
                     <Typography
@@ -245,28 +206,79 @@ export default function HomeView({
                       textAlign="center"
                       level="h3"
                     >
-                      {getRelativeDate(day.date)}
+                      current
                     </Typography>
                     <Typography
                       sx={{ color: "#FFF" }}
                       textAlign="center"
                       level="h4"
                     >
-                      {day.day.condition.text}
+                      {weatherData?.current.condition.text}
                     </Typography>
                     <Typography
                       sx={{ color: "#FFF" }}
                       textAlign="center"
                       level="body-lg"
                     >
-                      {Math.round(day.day.avgtemp_c)}°C
+                      {weatherData?.current.temp_c}°C
                     </Typography>
                   </CardContent>
                 </Card>
               </Grid>
-            ))}
-          </Grid>
-        </Box>
+              {weatherData?.forecast.forecastday.map((day) => (
+                <Grid key={day?.date} xs={12} sm={6} md={3}>
+                  <Card
+                    sx={{
+                      margin: "15px 15px",
+                      boxShadow: "0 4px 30px rgba(0, 0, 0, 0.1)",
+                      backdropFilter: "blur(5px)",
+                      border: "1px solid rgba(255, 255, 255, 0.3)",
+                      background: "rgba(31, 122, 31, 0.2)",
+                    }}
+                    variant="solid"
+                  >
+                    <CardContent
+                      orientation="horizontal"
+                      sx={{ justifyContent: "center" }}
+                    >
+                      {day && (
+                        <Image
+                          src={`https:${day?.day.condition.icon}`}
+                          alt="weather icon"
+                          width={80}
+                          height={80}
+                        />
+                      )}
+                    </CardContent>
+                    <CardContent>
+                      <Typography
+                        sx={{ color: "#FFF" }}
+                        textAlign="center"
+                        level="h3"
+                      >
+                        {getRelativeDate(day?.date)}
+                      </Typography>
+                      <Typography
+                        sx={{ color: "#FFF" }}
+                        textAlign="center"
+                        level="h4"
+                      >
+                        {day?.day.condition.text}
+                      </Typography>
+                      <Typography
+                        sx={{ color: "#FFF" }}
+                        textAlign="center"
+                        level="body-lg"
+                      >
+                        {Math.round(day?.day.avgtemp_c)}°C
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              ))}
+            </Grid>
+          </Box>
+        )}
       </Box>
       <Modal open={open} onClose={() => setOpen(false)}>
         <ModalDialog>

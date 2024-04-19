@@ -1,37 +1,44 @@
+import { cookies } from "next/headers";
 import HomeView from "./components/HomeView";
 
 const getWeatherData = async (city) => {
-  const response = await fetch(
-    `http://api.weatherapi.com/v1/forecast.json?key=3226c53da11f4dc996f142724231809&q=${city}&days=5&aqi=no&alerts=no`
-  );
+  if (city) {
+    const response = await fetch(
+      `http://api.weatherapi.com/v1/forecast.json?key=3226c53da11f4dc996f142724231809&q=${city}&days=5&aqi=no&alerts=no`
+    );
 
-  if (!response.ok) {
-    throw new Error("Failed to fetch weather data");
+    if (!response.ok) {
+      return;
+    }
+
+    return response.json();
   }
-
-  return response.json();
 };
 
 const getBackgroundImage = async (city) => {
-  const response = await fetch(
-    `https://api.unsplash.com/photos/random?query=${city}&client_id=sp4PYBTZuQa_CXlLFIEpw8W4a8J6cqALuhgkHsFWNJs`
-  );
+  if (city) {
+    const response = await fetch(
+      `https://api.unsplash.com/photos/random?query=${city}&client_id=sp4PYBTZuQa_CXlLFIEpw8W4a8J6cqALuhgkHsFWNJs`
+    );
 
-  if (!response.ok) {
-    throw new Error("Failed to fetch background image");
+    if (!response.ok) {
+      return;
+    }
+
+    return response.json();
   }
-
-  return response.json();
 };
 
 export default async function Home() {
-  const city = "Malmö"; //Read from cookies later
+  const cookieStore = cookies();
+  let city = cookieStore.get("lastCity")?.value ?? "";
+  city !== "" && decodeURIComponent(city);
   const weatherData = await getWeatherData(city);
   const backgroundImage = await getBackgroundImage(city);
   return (
     <HomeView
       firstCity={city}
-      firstImageUrl={backgroundImage.urls.full}
+      firstImageUrl={backgroundImage?.urls.full}
       firstWeatherData={weatherData}
     />
   );
