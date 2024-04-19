@@ -29,6 +29,10 @@ export default async function Home() {
   const weatherData = await getWeatherData(city);
   const backgroundImage = await getBackgroundImage(city);
   return (
-    <HomeView imageUrl={backgroundImage.urls.full} weatherData={weatherData} />
+    <HomeView
+      firstCity={city}
+      firstImageUrl={backgroundImage.urls.full}
+      firstWeatherData={weatherData}
+    />
   );
 }
