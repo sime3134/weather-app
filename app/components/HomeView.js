@@ -1,9 +1,24 @@
 "use client";
 
-import { Box, Sheet, SvgIcon, Typography } from "@mui/joy";
+import {
+  Box,
+  Card,
+  CardContent,
+  Grid,
+  Sheet,
+  SvgIcon,
+  Typography,
+} from "@mui/joy";
+import Image from "next/image";
+import { formatRelative } from "date-fns";
 
 export default function HomeView({ imageUrl, weatherData }) {
   console.log(weatherData);
+
+  const getRelativeDate = (date) => {
+    const index = formatRelative(date, new Date()).indexOf("at");
+    return formatRelative(date, new Date()).slice(0, index);
+  };
   return (
     <Box height="100vh" display="flex" flexDirection="column">
       <Box
@@ -66,7 +81,95 @@ export default function HomeView({ imageUrl, weatherData }) {
           border: "1px solid rgba(255, 255, 255, 0.3)",
         }}
       >
-        Test
+        <Grid
+          container
+          height="100%"
+          justifyContent="space-around"
+          alignItems="center"
+        >
+          <Grid xs={12} md={3}>
+            <Card sx={{ margin: "0 15px" }} variant="solid" color="primary">
+              <CardContent
+                orientation="horizontal"
+                sx={{ justifyContent: "center" }}
+              >
+                <Image
+                  src={`https:${weatherData.current.condition.icon}`}
+                  alt="weather icon"
+                  width={80}
+                  height={80}
+                />
+              </CardContent>
+              <CardContent>
+                <Typography
+                  sx={{ color: "#FFF" }}
+                  textAlign="center"
+                  level="h3"
+                >
+                  current
+                </Typography>
+                <Typography
+                  sx={{ color: "#FFF" }}
+                  textAlign="center"
+                  level="h3"
+                >
+                  {weatherData.current.condition.text}
+                </Typography>
+                <Typography
+                  sx={{ color: "#FFF" }}
+                  textAlign="center"
+                  level="h3"
+                >
+                  {weatherData.current.temp_c}°C
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          {weatherData.forecast.forecastday.map((day) => (
+            <Grid key={day.date} xs={12} md={3}>
+              <Card
+                sx={{ margin: "0 15px", height: "80%" }}
+                variant="solid"
+                color="primary"
+              >
+                <CardContent
+                  orientation="horizontal"
+                  sx={{ justifyContent: "center" }}
+                >
+                  <Image
+                    src={`https:${day.day.condition.icon}`}
+                    alt="weather icon"
+                    width={80}
+                    height={80}
+                  />
+                </CardContent>
+                <CardContent>
+                  <Typography
+                    sx={{ color: "#FFF" }}
+                    textAlign="center"
+                    level="h3"
+                  >
+                    {getRelativeDate(day.date)}
+                  </Typography>
+                  <Typography
+                    sx={{ color: "#FFF" }}
+                    textAlign="center"
+                    level="h3"
+                  >
+                    {day.day.condition.text}
+                  </Typography>
+                  <Typography
+                    sx={{ color: "#FFF" }}
+                    textAlign="center"
+                    level="h3"
+                  >
+                    {Math.round(day.day.avgtemp_c)}°C
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
       </Box>
     </Box>
   );
